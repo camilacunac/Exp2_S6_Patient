@@ -84,7 +84,7 @@ public class PatienteServiceImpl implements PatientService {
             res = new Response("error", "", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         } catch (Exception e) {
-            res = new Response("error", "", "Error al procesar la solicitud");
+            res = new Response("error", "", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
         }
     }
@@ -145,6 +145,9 @@ public class PatienteServiceImpl implements PatientService {
             if (patient.isPresent()) {
                 Patient updatedPatient = patient.get();
                 updatedPatient.setDireccion(direccion.getDireccion());
+                String[] partesFechaNac = updatedPatient.getFechaNacimiento().substring(0, 10).split("-");
+                String invertedFechaNac = partesFechaNac[2] + "-" + partesFechaNac[1] + "-" + partesFechaNac[0];
+                updatedPatient.setFechaNacimiento(invertedFechaNac);
                 Patient savedPatient = patientRepository.save(updatedPatient);
                 res = new Response("success", savedPatient, "");
                 return ResponseEntity.status(HttpStatus.OK).body(res);
@@ -152,7 +155,7 @@ public class PatienteServiceImpl implements PatientService {
             res = new Response("error", "", "No se encontro ningun paciente con ese id");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
         } catch (Exception e) {
-            res = new Response("error", "", "Error al procesar la solicitud");
+            res = new Response("error", "", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
         }
     }
